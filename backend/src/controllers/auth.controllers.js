@@ -25,8 +25,8 @@ export const signup = async (req,res) => {
 
         const newUser = new User({fullName,email,password:hashPassword})
         if (newUser){
+             await newUser.save()
             generateToken(newUser._id, res)
-            await newUser.save()
 
             res.status(201).json({_id:newUser._id,fullName:newUser.fullName,email:newUser.email,profilePic: newUser.profilePic})
         }else{
@@ -41,17 +41,17 @@ export const signup = async (req,res) => {
 
 export const login = async (req,res) => {
     const {email,password}=req.body
-    const salt = await bcrypt.genSalt(10)
-    const hashPassword = await bcrypt.hash(password,salt)
-    if(!email && !password){
+    
+    if(!email || !password){
         return res.status(400).json({message:"Enter all Fields"})
     }
-    const user = await User.findOne(email)
-    if(user === undefined){
+    const user = await User.findOne({email})
+
+    if(!user){
         return res.status(400).json({message:"Theres no user with this email"})
     }else{
-        if(user.password === hashPassword){
-            return res.status(201).json({message: "Welcome back"})
+        if(await bcrypt.compare(password, user.password)){
+            return res.status(200).json({message: "Welcome back"})
         }
     }
 }

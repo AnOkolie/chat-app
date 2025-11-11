@@ -16,6 +16,10 @@ app.use(express.json()) //allows you to get the fields from the user
 
 app.use("/api/auth",authRoutes)
 app.use("/api/messages",messageRoutes)
+const {NODE_ENV} = process.env
+    if(!NODE_ENV){
+        throw new Error("NODE_ENV is not configured")
+    }
 
 
 if(process.env.NODE_ENV === "production"){

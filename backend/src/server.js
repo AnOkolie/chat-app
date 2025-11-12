@@ -1,5 +1,6 @@
 import express from "express"
 import dotenv from "dotenv"
+import cookieParser from "cookie-parser"
 import path from "path"
 import authRoutes from "./routes/auth.route.js"
 import messageRoutes from "./routes/message.route.js"
@@ -13,6 +14,7 @@ const __dirname = path.resolve()
 const port  = process.env.PORT || 3000;
 
 app.use(express.json()) //allows you to get the fields from the user 
+app.use(cookieParser());
 
 app.use("/api/auth",authRoutes)
 app.use("/api/messages",messageRoutes)

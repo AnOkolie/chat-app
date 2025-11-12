@@ -5,12 +5,12 @@ import { updateProfile } from "../controllers/auth.controllers.js"
 import { arcjetProtection } from "../lib/arcjet.middleware.js"
 
 const router = express.Router()
-router.use(arcjetProtection) //use protection for all methods
+//router.use(arcjetProtection) //use protection for all methods
 
 router.get("/test", (req,res) => res.status(200).json({message:"Test route"}))
 router.post("/signup", signup)
 
-router.post("/login",arcjetProtection,login)
+router.post("/login",login)
 
 router.post("/logout", logout)
 

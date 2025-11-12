@@ -5,6 +5,8 @@ import path from "path"
 import authRoutes from "./routes/auth.route.js"
 import messageRoutes from "./routes/message.route.js"
 import { connectDB } from "./lib/db.js"
+import cors from "cors";
+import { ENV } from "./lib/env.js"
 
 dotenv.config();
 
@@ -14,6 +16,7 @@ const __dirname = path.resolve()
 const port  = process.env.PORT || 3000;
 
 app.use(express.json()) //allows you to get the fields from the user 
+app.use(cors({ origin: "http://localhost:5174", credentials: true }));
 app.use(cookieParser());
 
 app.use("/api/auth",authRoutes)

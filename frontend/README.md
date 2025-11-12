@@ -22,3 +22,6 @@ mongodb as the database
 arcjet for security and rate limiting
 resend for sending emails to users
 sevalla for deployment (not using vercel because vercel doesnt support web sockets)
+axios instead of fetch for api requests
+tailwind and daisyui for css styling
+zustand for state management

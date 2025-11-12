@@ -1,7 +1,8 @@
 import User from "../models/User.js"
 import bcrypt from "bcryptjs"
 import { generateToken } from "../lib/utils.js"
-
+import { sendWelcomeEmail } from "../emails/emailHandlers.js"
+import { ENV } from "../lib/env.js"
 
 export const signup = async (req,res) => {
     const {fullName,email,password} = req.body
@@ -25,10 +26,15 @@ export const signup = async (req,res) => {
 
         const newUser = new User({fullName,email,password:hashPassword})
         if (newUser){
-             await newUser.save()
+            const savedUser = await newUser.save()
             generateToken(newUser._id, res)
-
             res.status(201).json({_id:newUser._id,fullName:newUser.fullName,email:newUser.email,profilePic: newUser.profilePic})
+            try{
+                await sendWelcomeEmail(savedUser.email,savedUser.fullName,ENV.CLIENT_URL)
+            }catch(error){
+                console.log("error sending user email",error)
+            }
+            
         }else{
             return res.status(400).json({message:"Invalid user data"})
         }
@@ -40,7 +46,8 @@ export const signup = async (req,res) => {
 }
 
 export const login = async (req,res) => {
-    const {email,password}=req.body
+    try{
+        const {email,password}=req.body
     
     if(!email || !password){
         return res.status(400).json({message:"Enter all Fields"})
@@ -48,10 +55,23 @@ export const login = async (req,res) => {
     const user = await User.findOne({email})
 
     if(!user){
-        return res.status(400).json({message:"Theres no user with this email"})
+        return res.status(400).json({message:"Invalid Credentials"})
     }else{
         if(await bcrypt.compare(password, user.password)){
-            return res.status(200).json({message: "Welcome back"})
+            generateToken(user._id,res)
+            return res.status(200).json({_id: user._id, fullName: user.fullName,email:user.email,profilePic:user.profilePic})
+        }else{
+            return res.status(400).json({message:"Invalid Credentials"})
         }
     }
+    }catch(error){
+        console.log("Error in login controller")
+        return res.status(500).json({message:"Internal Server Error"})
+    }
+    
+}
+
+export const logout = async (_,res) => {
+    res.cookie("jwt","",{maxAge:0});
+    res.status(200).json({message: "Logged out successfully"})
 }

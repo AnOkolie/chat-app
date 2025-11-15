@@ -13,6 +13,7 @@ function App(){
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
+  
   if (isCheckingAuth) return <PageLoader />;
   return(
   <div className="min-h-screen bg-slate-900 relative flex items-center justify-center p-4 overflow-hidden">

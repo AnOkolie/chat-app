@@ -60,6 +60,7 @@ export const login = async (req,res) => {
         return res.status(400).json({message:"Invalid Credentials"})
     }else{
         if(await bcrypt.compare(password, user.password)){
+            console.log("login success")
             generateToken(user._id,res)
             return res.status(200).json({_id: user._id, fullName: user.fullName,email:user.email,profilePic:user.profilePic})
         }else{
@@ -85,7 +86,7 @@ export const updateProfile = async (req,res) => {
 
         const userId = req.user._id
         const uploadResponse = await cloudinary.uploader.upload(profilePic)
-        await User.findByIdAndUpdate(userId, {profilePic:uploadResponse.secure_url},{new:true});
+        const updateUser = await User.findByIdAndUpdate(userId, {profilePic:uploadResponse.secure_url},{new:true});
 
         res.status(200).json(updateUser)
     }catch(error){

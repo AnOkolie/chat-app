@@ -1,5 +1,5 @@
 import cloudinary from "../lib/cloudinary.js";
-//import { getReceiverSocketId, io } from "../lib/socket.js";
+import { getReceiverSocketId, io } from "../lib/socket.js";
 import Message from "../models/Message.js";
 import User from "../models/User.js";
 
@@ -67,11 +67,12 @@ export const sendMessage = async (req, res) => {
     });
 
     await newMessage.save();
-/*
+
     const receiverSocketId = getReceiverSocketId(receiverId);
     if (receiverSocketId) {
-      io.to(receiverSocketId).emit("newMessage", newMessage);
-    }*/
+      //the "newMessage" argument could be named anyhting but makes more sense to name it somethinng that identifies what you want
+      io.to(receiverSocketId).emit("newMessage", newMessage); //use the to keyword to specify a socket id instead of sending it to all sockets
+    }
 
     res.status(201).json(newMessage);
   } catch (error) {

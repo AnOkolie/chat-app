@@ -15,6 +15,10 @@ const io = new Server(server, {cors:{
 
 io.use(socketAuthMiddleware)
 
+export function getReceiverSocketId(userId){
+    return userSocketMap[userId] //returns the receivers socket id
+}
+
 const userSocketMap = {};
 
 //use io.on to listen initially so we can get the socket but all other calls for listening for events happen with socket.on

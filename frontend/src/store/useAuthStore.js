@@ -1,13 +1,17 @@
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
-
+import {io} from "socket.io-client"
+const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:3000" : "/";
 //manage global states. Use set to update states
 export const useAuthStore = create((set,get) => ({
    authUser: null,
    isCheckingAuth: true,
    isSigningUp: false,
    isLoggingIn: false,
+   isOnline: false,
+   socket: null,
+   onlineUsers: [],
 
    checkAuth: async () => {
     try {
@@ -75,5 +79,29 @@ export const useAuthStore = create((set,get) => ({
       toast.error("Profile updated Failed")
       console.log("error uploading image",error)
     }
+  },
+  connectSocket: () => {
+    
+    const {authUser} = get()
+    //if user is not authenticated or we are already connected then dont do anything
+    if(!authUser || get().socket?.connected) return 
+
+    const socket = io(BASE_URL, {
+      withCredentials: true, // this ensures cookies are sent with the connection
+    });
+    socket.connect()
+    console.log("connecting...")
+    set ({socket}) //set our socket state
+
+    socket.on("getOnlineUsers", (userId)=>{
+      set({ onlineUsers: userId });
+      set({isOnline:true})
+    })
+  },
+  disconnectSocket: () => {
+    
+
+     if (get().socket?.connected) get().socket.disconnect();
+     set({isOnline:false})
   }
 }));

@@ -1,19 +1,37 @@
-import { useChatStore } from '../store/useChatStore'
-import {useAuthStore} from '../store/useAuthStore'
-import MessagesLoadingSkelton from './MessagesLoadingSkeleton'
-import { useEffect,useRef } from 'react'
-import ChatHeader from './ChatHeader'
-import MessageInput from './MessageInput'
-import NoChatHistoryPlaceholder from './NoChatHistoryPlaceholder'
+import { useEffect, useRef } from "react";
+import { useAuthStore } from "../store/useAuthStore";
+import { useChatStore } from "../store/useChatStore";
+import ChatHeader from "./ChatHeader";
+import NoChatHistoryPlaceholder from "./NoChatHistoryPlaceholder";
+import MessageInput from "./MessageInput";
+import MessagesLoadingSkeleton from "./MessagesLoadingSkeleton";
+
 function ChatContainer() {
-  const {isMessagesLoading,messages,getMessagesByUserId,selectedUser} = useChatStore()
-  const {authUser} = useAuthStore()
-  //use effect runs whenever selectedUser changes
-  const messageEndRef = useRef(null)
+  const {
+    selectedUser,
+    getMessagesByUserId,
+    messages,
+    isMessagesLoading,
+    subscribeToMessages,
+    unsubscribeFromMessages,
+  } = useChatStore();
+  const { authUser } = useAuthStore();
+  const messageEndRef = useRef(null);
+
   useEffect(() => {
-    getMessagesByUserId(selectedUser._id)
-  },[selectedUser,getMessagesByUserId])
-  if(isMessagesLoading) return <MessagesLoadingSkelton/>
+    getMessagesByUserId(selectedUser._id);
+    subscribeToMessages();
+
+    // clean up
+    return () => unsubscribeFromMessages();
+  }, [selectedUser, getMessagesByUserId, subscribeToMessages, unsubscribeFromMessages]);
+
+  useEffect(() => {
+    if (messageEndRef.current) {
+      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
   return (
     <>
       <ChatHeader />
@@ -60,4 +78,4 @@ function ChatContainer() {
   );
 }
 
-export default ChatContainer
+export default ChatContainer;

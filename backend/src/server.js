@@ -7,12 +7,10 @@ import messageRoutes from "./routes/message.route.js"
 import { connectDB } from "./lib/db.js"
 import cors from "cors";
 import { ENV } from "./lib/env.js"
+import { app,server } from "./lib/socket.js"
 
-dotenv.config();
 
-const app = express()
 const __dirname = path.resolve()
-console.log(ENV.CLIENT_URL)
 const port  = process.env.PORT || 3000;
 
 app.use(express.json({ limit: "5mb" })); //allows you to get the fields from the user 
@@ -27,14 +25,14 @@ const {NODE_ENV} = process.env
     }
 
 
-if(process.env.NODE_ENV === "production"){
+if(ENV.NODE_ENV === "production"){
     app.use(express.static(path.join(__dirname, "../frontend/dist")))
     app.get("*",(_,res) => {
         res.sendFile(path.join(__dirname, "../frontend/dist/index.html")) //serve the index.html file for other api routes
     })
 }
 
-app.listen(port, () => {
+server.listen(port, () => {
     console.log(`Server running on port ${port}`)
     connectDB()
 })

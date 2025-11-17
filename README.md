@@ -34,7 +34,7 @@ A **real-time chat application** built with **React**, **Node.js**, **Express**,
 
 - **Frontend:** React, Tailwind CSS, DaisyUI  
 - **Backend:** Node.js, Express, Socket.IO  
-- **Database:** MongoDB (Atlas or local)  
+- **Database:** MongoDB (Atlas)  
 - **File Storage:** Cloudinary  
 - **Authentication:** JSON Web Tokens (JWT)  
 - **Real-Time Communication:** Socket.IO  
